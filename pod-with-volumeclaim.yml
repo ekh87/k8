@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: app-data
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /home/master/Template
+  storageClassName: shared
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resouces:
+    requests:
+      storage: 2Gi
+  storageClassName: shared
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: myapp
+  labels:
+    name: myapp
+spec:
+  volume:
+    - name: configpvc
+      PersistentVolumeClaim:
+        claimName: app-data
+  containers:
+    - name: app
+      image: nginx
+      volumeMounts:
+        - mountPath: /home/master/Template
+          name: configpvc
+
